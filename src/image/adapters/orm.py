@@ -1,9 +1,13 @@
 from sqlalchemy import (
-    DateTime, LargeBinary, Table,
+    DateTime,
+    LargeBinary,
+    Table,
     MetaData,
     Column,
     Integer,
-    String, create_engine, event,
+    String,
+    create_engine,
+    event,
 )
 from sqlalchemy.orm import registry
 
@@ -43,6 +47,7 @@ def receive_load(image, _) -> None:
 
 def start_mappers():
     mapper_registry.map_imperatively(Image, images)
+
 
 engine = create_engine(get_postgres_uri())
 metadata.create_all(engine)

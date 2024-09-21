@@ -5,12 +5,11 @@ from src.image.schemas.image_respose_schema import ImageResponseSchema
 
 
 def add_host_to_images(
-        images: list[ImageResponseSchema],
-        host: str
+    images: list[ImageResponseSchema], host: str
 ) -> list[ImageResponseSchema]:
     """Добавляет к пути файла текущий активный Host,
-     чтобы изображения были доступны в любой среде.
-     """
+    чтобы изображения были доступны в любой среде.
+    """
 
     # Больше выглядит как костыль =)
     for image in images:

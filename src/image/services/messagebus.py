@@ -3,8 +3,12 @@ from collections.abc import Callable
 
 from src.image.domain.commands import Command, LoadImage, ProcessImageSource
 from src.image.domain.events import Event, ImagePrepared, ImageSaved
-from src.image.services.handlers import create_image_view_to_read_model, load_image_handler, process_image, \
-    publish_loaded_event
+from src.image.services.handlers import (
+    create_image_view_to_read_model,
+    load_image_handler,
+    process_image,
+    publish_loaded_event,
+)
 from src.image.services.unit_of_work import AbstractUnitOfWork
 
 logger = logging.getLogger(__name__)
@@ -57,7 +61,7 @@ def handle_command(
 
 EVENT_HANDLERS: dict[type[Event], list[Callable]] = {
     ImageSaved: [publish_loaded_event],
-    ImagePrepared: [create_image_view_to_read_model]
+    ImagePrepared: [create_image_view_to_read_model],
 }
 
 COMMAND_HANDLERS: dict[type[Command], Callable] = {

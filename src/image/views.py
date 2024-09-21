@@ -6,9 +6,11 @@ from sqlalchemy.sql import text
 def images(uow: SqlAlchemyUnitOfWork) -> list[ImageResponseSchema]:
     """Получаем список всех обработанных изображений"""
     with uow:
-        query = text("""
+        query = text(
+            """
             SELECT id, title, description, created_at, image_path FROM images_view
-        """)
+        """
+        )
         results = uow.session.execute(query)
         results = results.mappings().all()
 
@@ -18,7 +20,9 @@ def images(uow: SqlAlchemyUnitOfWork) -> list[ImageResponseSchema]:
         return [ImageResponseSchema(**result) for result in results]
 
 
-def image_by_id(image_id: str, uow: SqlAlchemyUnitOfWork) -> list[ImageResponseSchema]:
+def image_by_id(
+    image_id: str, uow: SqlAlchemyUnitOfWork
+) -> list[ImageResponseSchema]:
     """
     Получаем изображение по его ID
     image_id должен быть str (Модель полностью в строковом варианте)

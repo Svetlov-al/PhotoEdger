@@ -4,7 +4,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
 from src.image import config
-from src.image.adapters.repository import AbstractRepository, SqlAlchemyImageRepository
+from src.image.adapters.repository import (
+    AbstractRepository,
+    SqlAlchemyImageRepository,
+)
 
 DEFAULT_SESSION_FACTORY = sessionmaker(
     bind=create_engine(

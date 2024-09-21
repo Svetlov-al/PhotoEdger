@@ -7,23 +7,18 @@ from fastapi.staticfiles import StaticFiles
 from src.image.config import IMAGE_FILES_PATH
 from src.image.entrypoints import healthcheck, image_list, load_image
 
-app = FastAPI(
-    title="PhotoEdger",
-    docs_url="/swagger",
-    redoc_url="/redoc"
-)
+app = FastAPI(title="PhotoEdger", docs_url="/swagger", redoc_url="/redoc")
 
 app.mount(
-    f"/api/images/{IMAGE_FILES_PATH}", StaticFiles(directory=f"/{IMAGE_FILES_PATH}"),
-    name="image_files"
+    f"/api/images/{IMAGE_FILES_PATH}",
+    StaticFiles(directory=f"/{IMAGE_FILES_PATH}"),
+    name="image_files",
 )
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler()
-    ]
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.StreamHandler()],
 )
 
 logger = logging.getLogger(__name__)

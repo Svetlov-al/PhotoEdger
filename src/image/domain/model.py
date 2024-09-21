@@ -5,11 +5,11 @@ from src.image.domain.events import Event
 
 class Image:
     def __init__(
-            self,
-            title: str,
-            desc: str,
-            image_data: bytes,
-            created_at: datetime | None = None
+        self,
+        title: str,
+        desc: str,
+        image_data: bytes,
+        created_at: datetime | None = None,
     ) -> None:
         self.title = title
         self.description = desc

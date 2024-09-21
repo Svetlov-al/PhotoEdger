@@ -54,14 +54,10 @@ class SqlAlchemyImageRepository(AbstractRepository):
             "title": image.title,
             "description": image.description,
             "created_at": image.created_at,
-            "image_data": image.image_data
+            "image_data": image.image_data,
         }
 
-        stmt = (
-            insert(images)
-            .values(**db_image)
-            .returning(images.c.id)
-        )
+        stmt = insert(images).values(**db_image).returning(images.c.id)
         res = self.session.execute(stmt)
 
         return res.scalar_one()

@@ -12,7 +12,7 @@ router = APIRouter()
     "/images",
     response_model=list[ImageResponseSchema],
     status_code=status.HTTP_200_OK,
-    summary="Получение списка обработанных изображений"
+    summary="Получение списка обработанных изображений",
 )
 def images_view(request: Request) -> list[ImageResponseSchema]:
     """Представление для получения списка всех обработанных изображений."""
@@ -26,7 +26,7 @@ def images_view(request: Request) -> list[ImageResponseSchema]:
     "/images/{image_id}",
     response_model=list[ImageResponseSchema],
     status_code=status.HTTP_200_OK,
-    summary="Получение изображения по его ID"
+    summary="Получение изображения по его ID",
 )
 def image_view(request: Request, image_id: int) -> list[ImageResponseSchema]:
     """Представление для получения изображения по его ID"""
@@ -34,6 +34,8 @@ def image_view(request: Request, image_id: int) -> list[ImageResponseSchema]:
     result = views.image_by_id(str(image_id), SqlAlchemyUnitOfWork())
 
     if not result:
-        raise HTTPException(status_code=404, detail=f"Изображение с ID: {image_id} не найдено.")
+        raise HTTPException(
+            status_code=404, detail=f"Изображение с ID: {image_id} не найдено."
+        )
 
     return add_host_to_images(result, str(request.url))

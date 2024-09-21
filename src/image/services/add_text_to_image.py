@@ -6,7 +6,11 @@ from PIL import Image as PILImage, ImageDraw, ImageFont
 logger = logging.getLogger(__name__)
 
 
-def add_text_to_image(image_data: bytes, file_path: str, text: str,) -> None:
+def add_text_to_image(
+    image_data: bytes,
+    file_path: str,
+    text: str,
+) -> None:
     """Добавляет текст из описания к изображению"""
 
     image = PILImage.open(io.BytesIO(image_data))
@@ -35,7 +39,9 @@ def add_text_to_image(image_data: bytes, file_path: str, text: str,) -> None:
 
     lines.append(line)
 
-    text_height = sum(ImageDraw.Draw(image).textbbox((0, 0), line, font=font)[3] for line in lines)
+    text_height = sum(
+        ImageDraw.Draw(image).textbbox((0, 0), line, font=font)[3] for line in lines
+    )
     text_image = PILImage.new("RGB", (width, text_height), color="black")
     text_draw = ImageDraw.Draw(text_image)
 

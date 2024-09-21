@@ -1,7 +1,9 @@
 from sqlalchemy import text
 
 from src.image.core.utils import get_file_path
-from src.image.exceptions.description_to_long_exception import DescriptionToLongException
+from src.image.exceptions.description_to_long_exception import (
+    DescriptionToLongException,
+)
 from src.image.services.add_text_to_image import add_text_to_image
 from src.image.services.unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
 from src.image.adapters import redis_eventpublisher
@@ -13,8 +15,8 @@ from src.image.exceptions.image_already_loaded_exception import ImageAlreadyLoad
 
 
 def load_image_handler(
-        cmd: LoadImage,
-        uow: AbstractUnitOfWork,
+    cmd: LoadImage,
+    uow: AbstractUnitOfWork,
 ) -> None:
     """Хендлер загрузки и сохранения изображения в основную модель базы."""
     with uow:
@@ -24,10 +26,14 @@ def load_image_handler(
         # (В целом данная проверка опциональная, и можно добавлять к изображению временную метку
         # и отвязаться от нейминга этих изображений)
         if image:
-            raise ImageAlreadyLoaded(f"Изображение с таким названием уже сохранено {image.title}")
+            raise ImageAlreadyLoaded(
+                f"Изображение с таким названием уже сохранено {image.title}"
+            )
 
         if len(cmd.description) > 200:
-            raise DescriptionToLongException("Описание превышает допустимое значение в 200 знаков.")
+            raise DescriptionToLongException(
+                "Описание превышает допустимое значение в 200 знаков."
+            )
 
         image = Image(
             title=cmd.title,
@@ -44,7 +50,7 @@ def load_image_handler(
                 id=image_id,
                 title=image.title,
                 description=image.description,
-                created_at=image.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                created_at=image.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             )
         )
 
@@ -52,12 +58,12 @@ def load_image_handler(
 
 
 def process_image(
-        cmd: ProcessImageSource,
-        uow: AbstractUnitOfWork,
+    cmd: ProcessImageSource,
+    uow: AbstractUnitOfWork,
 ) -> None:
     """Хендлер обработки изображения, добавляет черную полосу к изображению с текстом
     содержащим описание изображения.
-     """
+    """
     with uow:
         image = uow.images.get(image_id=int(cmd.image_id))
 
@@ -87,16 +93,16 @@ def process_image(
 
 
 def publish_loaded_event(
-        event: ImageSaved,
-        uow: AbstractUnitOfWork,  # noqa
+    event: ImageSaved,
+    uow: AbstractUnitOfWork,  # noqa
 ) -> None:
     """Хендлер отправки события в очередь Redis"""
     redis_eventpublisher.publish(REDIS_CHANNEL, event)
 
 
 def create_image_view_to_read_model(
-        event: ImagePrepared,
-        uow: SqlAlchemyUnitOfWork,
+    event: ImagePrepared,
+    uow: SqlAlchemyUnitOfWork,
 ) -> None:
     """Хендлер сохранения изображения в модель представления"""
     with uow:
@@ -108,11 +114,11 @@ def create_image_view_to_read_model(
         )
 
         params = {
-            'id': event.id,
-            'title': event.title,
-            'description': event.description,
-            'image_path': event.image_path,
-            'created_at': event.created_at
+            "id": event.id,
+            "title": event.title,
+            "description": event.description,
+            "image_path": event.image_path,
+            "created_at": event.created_at,
         }
         uow.session.execute(query, params)
 

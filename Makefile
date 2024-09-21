@@ -33,3 +33,9 @@ black:
 
 run:
 	docker exec -d backend uvicorn src.image.core.main:app --host 0.0.0.0 --port 8000 --reload
+
+upgrade:
+	docker exec -d backend alembic upgrade head
+
+downgrade:
+	docker exec -d backend alembic downgrade -1
