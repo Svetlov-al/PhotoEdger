@@ -1,7 +1,11 @@
-FROM python:3.11-slim-buster
+FROM python:3.11-alpine
 
 # RUN apt install gcc libpq (no longer needed bc we use psycopg2-binary)
-RUN apt-get update && apt-get install -y fonts-dejavu-core
+RUN apk add --no-cache \
+    sqlite \
+    sqlite-dev \
+    fontconfig \
+    ttf-dejavu
 
 COPY requirements.txt /tmp/
 RUN pip install -r /tmp/requirements.txt

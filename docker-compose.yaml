@@ -21,6 +21,11 @@ services:
       - /src/src/image/entrypoints/redis_eventconsumer.py
     networks:
       - dev
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
 
   backend:
     build:
@@ -32,12 +37,9 @@ services:
     volumes:
       - .:/src
       - ./image_files:/image_files
-
+      - ./tests:/tests
     depends_on:
-      redis:
-        condition: service_healthy
-      db:
-        condition: service_healthy
+      - redis_pubsub
     env_file:
       - .env
     command: /bin/sh -c "while sleep 1000; do :; done"

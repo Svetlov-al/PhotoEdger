@@ -14,19 +14,20 @@ down:
 	docker-compose down --remove-orphans
 
 test: up
-	docker-compose run --rm --no-deps --entrypoint=pytest api /tests/unit /tests/integration /tests/e2e
+	docker-compose run --rm --no-deps --entrypoint=pytest backend /tests/unit /tests/integration /tests/e2e
 
 unit-tests:
-	docker-compose run --rm --no-deps --entrypoint=pytest api /tests/unit
+	docker-compose run --rm --no-deps --entrypoint=pytest backend /tests/unit
 
 integration-tests: up
-	docker-compose run --rm --no-deps --entrypoint=pytest api /tests/integration
+	docker-compose run --rm --no-deps --entrypoint=pytest backend /tests/integration
 
 e2e-tests: up
-	docker-compose run --rm --no-deps --entrypoint=pytest api /tests/e2e
+	docker exec -d backend uvicorn src.image.core.main:app --host 0.0.0.0 --port 8000 --reload
+	docker-compose run --rm --no-deps --entrypoint=pytest backend /tests/e2e
 
 logs:
-	docker-compose logs --tail=25 api redis_pubsub
+	docker-compose logs --tail=25 redis_pubsub
 
 black:
 	black -l 86 $$(find * -name '*.py')

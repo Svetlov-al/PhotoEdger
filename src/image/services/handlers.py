@@ -1,9 +1,12 @@
+import logging
+
 from sqlalchemy import text
 
 from src.image.core.utils import get_file_path
 from src.image.exceptions.description_to_long_exception import (
     DescriptionToLongException,
 )
+from src.image.exceptions.image_not_found_exception import ImageNotFoundException
 from src.image.services.add_text_to_image import add_text_to_image
 from src.image.services.unit_of_work import AbstractUnitOfWork, SqlAlchemyUnitOfWork
 from src.image.adapters import redis_eventpublisher
@@ -12,6 +15,8 @@ from src.image.domain.commands import LoadImage, ProcessImageSource
 from src.image.domain.events import ImagePrepared, ImageSaved
 from src.image.domain.model import Image
 from src.image.exceptions.image_already_loaded_exception import ImageAlreadyLoaded
+
+logger = logging.getLogger(__name__)
 
 
 def load_image_handler(
@@ -26,11 +31,23 @@ def load_image_handler(
         # (В целом данная проверка опциональная, и можно добавлять к изображению временную метку
         # и отвязаться от нейминга этих изображений)
         if image:
+            logger.info(
+                "Попытка повторной загрузки изображения",
+                extra={
+                    "title": image.title,
+                    "created_at": image.created_at,
+                    "description": image.description,
+                },
+            )
             raise ImageAlreadyLoaded(
                 f"Изображение с таким названием уже сохранено {image.title}"
             )
 
         if len(cmd.description) > 200:
+            logger.info(
+                "Попытка загрузки изображения с слишком длинным описанием",
+                extra={"title": cmd.title, "description": cmd.description},
+            )
             raise DescriptionToLongException(
                 "Описание превышает допустимое значение в 200 знаков."
             )
@@ -54,6 +71,14 @@ def load_image_handler(
             )
         )
 
+        logger.info(
+            "Создано событие",
+            extra={
+                "event": type(ImageSaved),
+                "title": image.title,
+            },
+        )
+
         uow.commit()
 
 
@@ -67,19 +92,24 @@ def process_image(
     with uow:
         image = uow.images.get(image_id=int(cmd.image_id))
 
+        if not image:
+            raise ImageNotFoundException(
+                f"Изображение с ID: {cmd.image_id} не найдено"
+            )
+
         # => Получает путь к файлу по его названию
         # (Возможно путь сохраняется не самым оптимальным путем, по причине возможной смены папки
         # для хранения изображения, и следовало бы отвязаться от этой настройки)
         file_path = get_file_path(file_name=image.title)
 
-        # => Добавляем текст к изображению и сохраняем
+        # => Добавляем текст к изображению и сохраняем на диск
         add_text_to_image(
             image_data=image.image_data,
             file_path=file_path,
             text=image.description,
         )
 
-        # => Создаем новое событие, что иззображение готово к сохранению в модель представления.
+        # => Создаем новое событие, что изображение готово к сохранению в модель представления.
         image.events.append(
             ImagePrepared(
                 id=image.id,  # type: ignore

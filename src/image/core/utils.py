@@ -5,15 +5,18 @@ from src.image.schemas.image_respose_schema import ImageResponseSchema
 
 
 def add_host_to_images(
-    images: list[ImageResponseSchema], host: str
+    images: list[ImageResponseSchema],
 ) -> list[ImageResponseSchema]:
     """Добавляет к пути файла текущий активный Host,
     чтобы изображения были доступны в любой среде.
     """
 
     # Больше выглядит как костыль =)
+    HOST = os.getenv("API_HOST", "localhost:8000")
+
+    URL = f"{HOST}/api/images"
     for image in images:
-        image.image_path = f"{host}{image.image_path}"
+        image.image_path = f"{URL}{image.image_path}"
     return images
 
 

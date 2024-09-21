@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, File, Form, UploadFile, status
 from fastapi.responses import JSONResponse
 
@@ -10,12 +12,13 @@ from src.image.services import messagebus
 from src.image.services.unit_of_work import SqlAlchemyUnitOfWork
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 
 @router.post(
     "/images",
     status_code=status.HTTP_201_CREATED,
-    summary="Загрузка изображения в модель в сыром виде",
+    summary="Загрузка изображения",
 )
 async def load_image(
     title: str = Form(...), description: str = Form(...), file: UploadFile = File(...)

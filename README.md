@@ -41,6 +41,9 @@ cp .env.example .env
   ```bash
   make up -d
 
+- Запуск миграций для создания таблиц
+- ```bash
+  make upgrade
 - Для запуска FastAPI:
 - ```bash
   make run
@@ -60,10 +63,8 @@ alembic revision --autogenerate -m "some_comment"
 Применение миграций:
 
 ```
-Повышение
 make upgrade
 
-Понижение
 make downgrade
 ```
 
