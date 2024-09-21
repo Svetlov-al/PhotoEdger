@@ -1,0 +1,91 @@
+networks:
+  dev:
+
+services:
+  redis_pubsub:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: redis_pubsub
+    environment:
+      - DB_HOST=${DB_HOST}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - PYTHONDONTWRITEBYTECODE=1
+    volumes:
+      - .:/src
+      - ./tests:/tests
+      - ./image_files:/image_files
+    entrypoint:
+      - python
+      - /src/src/image/entrypoints/redis_eventconsumer.py
+    networks:
+      - dev
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/src
+      - ./image_files:/image_files
+
+    depends_on:
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    networks:
+      - dev
+
+  db:
+    image: postgres:15-alpine
+    container_name: db
+    restart: always
+    environment:
+      PGUSER: ${DB_USER}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dev
+
+  redis:
+    image: "redis:alpine"
+    restart: always
+    container_name: redis
+    expose:
+      - "6379"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 80s
+    volumes:
+      - redis_data:/data
+    networks:
+      - dev
+
+volumes:
+  pg_data:
+    name: pg_data
+  redis_data:
+    name: redis_data
