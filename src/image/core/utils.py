@@ -12,9 +12,10 @@ def add_host_to_images(
     """
 
     # Больше выглядит как костыль =)
-    HOST = os.getenv("API_HOST", "localhost:8000")
+    HOST = os.getenv("API_HOST", "localhost")
+    PORT = os.getenv("API_PORT", 8000)
+    URL = f"{HOST}:{PORT}/api/images"
 
-    URL = f"{HOST}/api/images"
     for image in images:
         image.image_path = f"{URL}{image.image_path}"
     return images
