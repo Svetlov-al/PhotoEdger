@@ -1,8 +1,18 @@
 import logging
 
-from sqlalchemy import Column, DateTime, Integer, LargeBinary, String, Table, event
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Integer,
+    LargeBinary,
+    String,
+    Table,
+    event,
+    create_engine,
+)
 from sqlalchemy.orm import registry
 
+from src.image import config
 from src.image.domain.model import Image
 
 mapper_registry = registry()
@@ -42,3 +52,7 @@ def start_mappers():
 @event.listens_for(Image, "load")
 def receive_load(image, _) -> None:
     image.events = []
+
+
+engine = create_engine(config.get_postgres_uri())
+metadata.create_all(engine)
