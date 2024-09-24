@@ -19,6 +19,7 @@ DEFAULT_SESSION_FACTORY = sessionmaker(
 
 class AbstractUnitOfWork(abc.ABC):
     images: AbstractRepository
+    session: Session
 
     def __enter__(self) -> "AbstractUnitOfWork":
         return self

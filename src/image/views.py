@@ -1,9 +1,9 @@
 from src.image.schemas.image_respose_schema import ImageResponseSchema
-from src.image.services.unit_of_work import SqlAlchemyUnitOfWork
+from src.image.services.unit_of_work import AbstractUnitOfWork
 from sqlalchemy.sql import text
 
 
-def images(uow: SqlAlchemyUnitOfWork) -> list[ImageResponseSchema]:
+def images(uow: AbstractUnitOfWork) -> list[ImageResponseSchema]:
     """Получаем список всех обработанных изображений"""
     with uow:
         query = text(
@@ -21,7 +21,8 @@ def images(uow: SqlAlchemyUnitOfWork) -> list[ImageResponseSchema]:
 
 
 def image_by_id(
-    image_id: str, uow: SqlAlchemyUnitOfWork
+    image_id: str,
+    uow: AbstractUnitOfWork
 ) -> list[ImageResponseSchema]:
     """
     Получаем изображение по его ID

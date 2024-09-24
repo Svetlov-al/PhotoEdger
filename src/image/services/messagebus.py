@@ -1,6 +1,8 @@
 import logging
 from collections.abc import Callable
+from typing import Any
 
+from src.image.core.init import container
 from src.image.domain.commands import Command, LoadImage, ProcessImageSource
 from src.image.domain.events import Event, ImagePrepared, ImageSaved
 from src.image.services.handlers import (
@@ -18,17 +20,23 @@ Message = Command | Event
 
 def handle(
     message: Message,
-    uow: AbstractUnitOfWork,
-) -> None:
+    uow: AbstractUnitOfWork = container.resolve(AbstractUnitOfWork),
+) -> list[Any]:
+
+    results = []
+
     queue = [message]
     while queue:
         message = queue.pop(0)
         if isinstance(message, Event):
             handle_event(message, queue, uow)
         elif isinstance(message, Command):
-            handle_command(message, queue, uow)
+            cmd_result = handle_command(message, queue, uow)
+            results.append(cmd_result)
         else:
             raise Exception(f"{message} не является объектом Event или Command")
+
+    return results
 
 
 def handle_event(
@@ -49,11 +57,12 @@ def handle_command(
     command: Command,
     queue: list[Message],
     uow: AbstractUnitOfWork,
-) -> None:
+) -> Any:
     try:
         handler = COMMAND_HANDLERS[type(command)]
-        handler(command, uow)
+        result = handler(command, uow)
         queue.extend(uow.collect_new_events())
+        return result
     except Exception as exc:
         logger.exception(f"Ошибка обработки команды: {exc} - {type(command)}")
         raise

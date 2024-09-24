@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 def load_image_handler(
     cmd: LoadImage,
     uow: AbstractUnitOfWork,
-) -> None:
+) -> int:
     """Хендлер загрузки и сохранения изображения в основную модель базы."""
     with uow:
         image = uow.images.get_by_title(title=cmd.title)
@@ -80,6 +80,8 @@ def load_image_handler(
         )
 
         uow.commit()
+
+        return image_id
 
 
 def process_image(

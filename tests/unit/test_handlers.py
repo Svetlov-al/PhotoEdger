@@ -41,7 +41,7 @@ class FakeUnitOfWork(AbstractUnitOfWork):
     def __init__(self):
         self.images = FakeRepository([])
         self.committed = False
-        self.session = FakeSession()
+        self.session = FakeSession()  # type: ignore
 
     def _commit(self):
         self.committed = True
