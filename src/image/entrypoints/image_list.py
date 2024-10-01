@@ -18,7 +18,9 @@ logger = logging.getLogger(__name__)
     status_code=status.HTTP_200_OK,
     summary="Получение списка обработанных изображений",
 )
-def images_view(uow: AbstractUnitOfWork = Depends(get_uow)) -> list[ImageResponseSchema]:
+def images_view(
+    uow: AbstractUnitOfWork = Depends(get_uow),
+) -> list[ImageResponseSchema]:
     """Представление для получения списка всех обработанных изображений."""
 
     result = views.images(uow)
@@ -32,7 +34,9 @@ def images_view(uow: AbstractUnitOfWork = Depends(get_uow)) -> list[ImageRespons
     status_code=status.HTTP_200_OK,
     summary="Получение изображения по его ID",
 )
-def image_view(image_id: int, uow: AbstractUnitOfWork = Depends(get_uow)) -> list[ImageResponseSchema]:
+def image_view(
+    image_id: int, uow: AbstractUnitOfWork = Depends(get_uow)
+) -> list[ImageResponseSchema]:
     """Представление для получения изображения по его ID"""
 
     result = views.image_by_id(str(image_id), uow)

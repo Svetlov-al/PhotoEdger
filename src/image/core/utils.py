@@ -2,6 +2,7 @@ import os
 
 from src.image.config import IMAGE_FILES_PATH
 from src.image.schemas.image_respose_schema import ImageResponseSchema
+from src.image.config import config
 
 
 def add_host_to_images(
@@ -12,9 +13,7 @@ def add_host_to_images(
     """
 
     # Больше выглядит как костыль =)
-    HOST = os.getenv("API_HOST", "localhost")
-    PORT = os.getenv("API_PORT", 8000)
-    URL = f"{HOST}:{PORT}/api/images"
+    URL = f"{config.api_host}:{config.api_port}/api/images"
 
     for image in images:
         image.image_path = f"{URL}{image.image_path}"

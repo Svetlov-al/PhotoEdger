@@ -17,6 +17,7 @@ def random_title(name=""):
 # TODO Удаление созданных изображений после тестов
 # TODO Перенос тестов на тестовую базу
 
+
 def test_happy_path_returns_201(client: TestClient) -> None:
     r = api_client.post_to_add_image(
         client,

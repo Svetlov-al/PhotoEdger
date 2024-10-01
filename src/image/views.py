@@ -20,10 +20,7 @@ def images(uow: AbstractUnitOfWork) -> list[ImageResponseSchema]:
         return [ImageResponseSchema(**result) for result in results]
 
 
-def image_by_id(
-    image_id: str,
-    uow: AbstractUnitOfWork
-) -> list[ImageResponseSchema]:
+def image_by_id(image_id: str, uow: AbstractUnitOfWork) -> list[ImageResponseSchema]:
     """
     Получаем изображение по его ID
     image_id должен быть str (Модель полностью в строковом варианте)

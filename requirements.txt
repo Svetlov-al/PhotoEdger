@@ -26,6 +26,6 @@ black
 pytest~=8.3.3
 tenacity~=9.0.0
 httpx
-
+pydantic_settings
 punq~=0.7.0
 setuptools~=69.5.1

@@ -1,25 +1,36 @@
-import os
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
-def get_postgres_uri():
-    host = os.environ.get("DB_HOST", "db")
-    port = 5433 if host == "localhost" else 5432
-    password = os.environ.get("DB_PASSWORD", "password")
-    user = os.environ.get("DB_USER", "postgres")
-    db_name = os.environ.get("DB_NAME", "image")
-    return f"postgresql://{user}:{password}@{host}:{port}/{db_name}"
+class Config(BaseSettings):
+    api_host: str = Field(alias="API_HOST", default="localhost")
+    api_port: int = Field(alias="API_PORT", default=8000)
+
+    redis_host: str = Field(alias="REDIS_HOST", default="localhost")
+    redis_port: int = Field(alias="REDIS_POST", default=6379)
+
+    db_host: str = Field(alias="DB_HOST", default="localhost")
+    db_port: int = Field(alias="PORT", default=5432)
+    db_user: str = Field(alias="DB_USER", default="postgres")
+    db_name: str = Field(alias="DB_NAME", default="image")
+    db_password: str = Field(alias="DB_PASSWORD", default="password")
+    redis_channel: str = Field(alias="REDIS_CHANNELL", default="image_saved")
+    image_files_path: str = Field(alias="IMAGE_FILES_PATH", default="image_files")
 
 
-def get_api_url():
-    host = os.environ.get("API_HOST", "localhost")
-    port = 8000 if host == "localhost" else 8000
-    return f"http://{host}:{port}"
+config: Config = Config()
 
 
-def get_redis_host_and_port():
-    host = os.environ.get("REDIS_HOST", "redis")
-    port = 6379 if host == "localhost" else 6379
-    return dict(host=host, port=port)
+def get_postgres_uri() -> str:
+    return f"postgresql://{config.db_user}:{config.db_password}@{config.db_host}:{config.db_port}/{config.db_name}"
+
+
+def get_api_url() -> str:
+    return f"http://{config.api_host}:{config.api_port}"  # noqa
+
+
+def get_redis_host_and_port() -> dict:
+    return dict(host=config.redis_host, port=config.redis_port)
 
 
 REDIS_CHANNEL = "image_saved"

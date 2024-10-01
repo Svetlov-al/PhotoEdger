@@ -36,4 +36,6 @@ async def load_image(
             {"message": str(exc)}, status_code=status.HTTP_400_BAD_REQUEST
         )
 
-    return JSONResponse({"success": True, "image_id": image_id}, status_code=status.HTTP_201_CREATED)
+    return JSONResponse(
+        {"success": True, "image_id": image_id}, status_code=status.HTTP_201_CREATED
+    )
